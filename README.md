@@ -1,6 +1,4 @@
-# gendiff
-
-# Frontend Project 46
+### Hexlet tests and linter status
 
 [![Actions Status](https://github.com/vladislavborovinskiy/frontend-project-46/actions/workflows/tests.yml/badge.svg)](https://github.com/vladislavborovinskiy/frontend-project-46/actions)
 
