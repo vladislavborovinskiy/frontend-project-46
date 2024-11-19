@@ -1,4 +1,4 @@
-### Hexlet tests and linter status
+## Hexlet tests and linter status
 
 [![Actions Status](https://github.com/vladislavborovinskiy/frontend-project-46/actions/workflows/tests.yml/badge.svg)](https://github.com/vladislavborovinskiy/frontend-project-46/actions)
 
@@ -6,7 +6,8 @@
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/a1192c9ae04584b932a2/maintainability)](https://codeclimate.com/github/vladislavborovinskiy/frontend-project-46/maintainability)
 
-The utility compares two configuration files and displays the differences between them.
+# Difference Calculator
+### The utility compares two configuration files and displays the differences between them.
 
 ## Setup
 
