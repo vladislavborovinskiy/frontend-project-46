@@ -1,14 +1,31 @@
 {
   "name": "@hexlet/code",
   "version": "1.0.0",
-  "description": "[![Actions Status](https://github.com/vladislavborovinskiy/frontend-project-46/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/vladislavborovinskiy/frontend-project-46/actions)",
-  "main": "index.js",
+  "type": "module",
+  "description": "Difference calculator is a program designed to determine the difference between two data structures.[![Actions Status](https://github.com/vladislavborovinskiy/frontend-project-46/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/vladislavborovinskiy/frontend-project-46/actions)",
+  "main": "./src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint-fix": "npx eslint . --fix",
+    "test": "jest",
+    "test-watch": "jest --watch",
+    "test-coverage": "jest --coverage",
+    "publish": "npm publish --dry-run"
   },
   "author": "Vladislav Borovinskiy",
   "license": "ISC",
   "bin": {
-    "gendiff": "./gendiff.js"
-  }
+    "gendiff": "./bin/gendiff.js"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "codeclimate-test-reporter": "^0.5.1",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "jest": "^29.7.0"
+  },
+  "keywords": []
 }
