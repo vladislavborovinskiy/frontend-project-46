@@ -16,19 +16,19 @@ The utility compares two configuration files and displays the differences betwee
 npm install
 ```
 
-## Run
+## DEMO:
 
+### [View documentation](https://imgur.com/a/qchir9v)
+```bash
+gendiff -h
+```
+
+### [Recursive file comparison](https://imgur.com/a/wj0Rh8N)
 ```bash
 gendiff [options] <filepath1> <filepath2>
 ```
 
-## DEMO:
-
-### View documentation:
-#### [gendiff -h](https://imgur.com/a/qchir9v)
-
-### Recursive file comparison:
-#### [gendiff [options] <filepath1> <filepath2>](https://imgur.com/a/wj0Rh8N)
-
-### Flat file comparison:
-#### [gendiff -f plain file1.yml file2.json](https://imgur.com/a/I7mVFkx)
+### [Flat file comparison](https://imgur.com/a/I7mVFkx)
+```bash
+gendiff -f plain file1.yml file2.json
+```
