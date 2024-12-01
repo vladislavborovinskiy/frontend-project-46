@@ -13,7 +13,8 @@ const getPlain = (object) => {
     const entries = Object.entries(obj);
     return entries.reduce((acc, entrie) => {
       const [key, value] = entrie;
-      const keyToPrint = `${ancestry}${key.slice(2)}`;
+      const cleanKey = key.slice(2);
+      const keyToPrint = `${ancestry}${cleanKey}`;
       const valueToPrint = getValueToPrint(value);
 
       if (key.startsWith('+')) {
