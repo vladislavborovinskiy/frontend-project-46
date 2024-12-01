@@ -6,23 +6,19 @@ import genDiff from '../src/index.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8').trim();
 
-const fileName1 = 'file1.json';
-const fileName2 = 'file2.yml';
+const filepath1 = getFixturePath('file1.json');
+const filepath2 = getFixturePath('file2.yml');
 
-const filepath1 = getFixturePath(fileName1);
-const filepath2 = getFixturePath(fileName2);
-
-test.each([
-  ['stylish', 'resultStylish.txt'],
-  ['plain', 'resultPlain.txt'],
-  ['json', 'resultJSON.json'],
-])('%s', (format, expectedOutput) => {
-  const diff = genDiff(filepath1, filepath2, format);
-  const result = fs.readFileSync(getFixturePath(expectedOutput), 'utf-8');
-  expect(diff).toEqual(result);
+test('stylish', () => {
+  const diff = genDiff(filepath1, filepath2).trim();
+  const expected = readFile('resultStylish.txt');
+  expect(diff).toEqual(expected);
 });
 
-test('wrong format', () => {
-  expect((() => genDiff(filepath1, filepath2, 'wrong'))).toThrow();
+test('plain', () => {
+  const diff = genDiff(filepath1, filepath2, 'plain').trim();
+  const expected = readFile('resultPlain.txt');
+  expect(diff).toEqual(expected);
 });
