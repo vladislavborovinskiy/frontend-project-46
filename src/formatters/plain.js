@@ -28,7 +28,12 @@ const getPlain = (object) => {
       return acc;
     }, '');
   };
-  const intermediateList = inner(object, '').split('\n').map((el) => el.split('_')).slice(1);
+
+  const intermediateList = inner(object, '')
+    .split('\n')
+    .map((el) => el.split('_'))
+    .slice(1);
+
   const list = intermediateList.reduce((acc, el) => {
     if (acc.length === 0) {
       acc.push(el);
@@ -43,7 +48,8 @@ const getPlain = (object) => {
     }
     return acc;
   }, []);
-  return list.reduce((acc, el) => {
+
+  const result = list.reduce((acc, el) => {
     const status = el[1];
     switch (status) {
       case 'added':
@@ -56,6 +62,8 @@ const getPlain = (object) => {
         throw new Error(`Unknown status: ${status}!`);
     }
   }, '');
+
+  return result.trim();
 };
 
 export default getPlain;
