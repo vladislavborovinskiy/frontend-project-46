@@ -2,21 +2,23 @@ import _ from 'lodash';
 
 const getIndent = (depth) => ' '.repeat(depth * 4);
 
+const stringify = (value, depth) => {
+  if (!_.isObject(value)) {
+    return value;
+  }
+
+  const entries = Object.entries(value)
+    .map(([key, val]) => `${getIndent(depth + 1)}${key}: ${stringify(val, depth + 1)}`)
+    .join('\n');
+
+  return `{\n${entries}\n${getIndent(depth)}}`;
+};
+
 const formatStylish = (tree) => {
   const iter = (nodes, depth) => nodes
     .map((node) => {
-      const indent = getIndent(depth);
+      const indent = getIndent(depth).slice(0, -2);
       const braceIndent = getIndent(depth - 1);
-
-      const stringify = (value, currentDepth) => {
-        if (!_.isObject(value)) {
-          return value;
-        }
-        const entries = Object.entries(value)
-          .map(([key, val]) => `${getIndent(currentDepth + 1)}  ${key}: ${stringify(val, currentDepth + 1)}`)
-          .join('\n');
-        return `{\n${entries}\n${getIndent(currentDepth)}}`;
-      };
 
       switch (node.status) {
         case 'added':
