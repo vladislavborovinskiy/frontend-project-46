@@ -1,42 +1,41 @@
+import _ from 'lodash';
 import path from 'path';
-import { cwd } from 'process';
 import parseFile from './parsers.js';
 
-const getAbsPath = (fileName) => path.resolve(cwd(), '__fixtures__', fileName);
-
-const buildDifference = (key, obj1, obj2, recurse) => {
-  if (obj1[key] instanceof Object && obj2[key] instanceof Object) {
-    return { [`  ${key}`]: recurse(obj1[key], obj2[key]) };
-  }
-  if (Object.hasOwn(obj1, key) && !Object.hasOwn(obj2, key)) {
-    return { [`- ${key}`]: obj1[key] };
-  }
-  if (!Object.hasOwn(obj1, key) && Object.hasOwn(obj2, key)) {
-    return { [`+ ${key}`]: obj2[key] };
-  }
-  if (obj1[key] !== obj2[key]) {
-    return {
-      [`- ${key}`]: obj1[key],
-      [`+ ${key}`]: obj2[key],
-    };
-  }
-  return { [`  ${key}`]: obj1[key] };
-};
+const getAbsPath = (fileName) => path.resolve(process.cwd(), fileName);
 
 const getDifference = (filepath1, filepath2) => {
   const object1 = parseFile(getAbsPath(filepath1));
   const object2 = parseFile(getAbsPath(filepath2));
 
-  const inner = (obj1, obj2) => {
-    const keys = [...Object.keys({ ...obj1, ...obj2 })].sort();
+  const buildDifference = (obj1, obj2) => {
+    const keys = _.sortBy(_.union(Object.keys(obj1), Object.keys(obj2)));
 
-    return keys.reduce((acc, key) => {
-      const difference = buildDifference(key, obj1, obj2, inner);
-      return { ...acc, ...difference };
-    }, {});
+    return keys.map((key) => {
+      if (!_.has(obj1, key)) {
+        return { key, value: obj2[key], status: 'added' };
+      }
+      if (!_.has(obj2, key)) {
+        return { key, value: obj1[key], status: 'deleted' };
+      }
+      const value1 = obj1[key];
+      const value2 = obj2[key];
+      if (_.isObject(value1) && _.isObject(value2)) {
+        return { key, status: 'nested', children: buildDifference(value1, value2) };
+      }
+      if (!_.isEqual(value1, value2)) {
+        return {
+          key,
+          value1,
+          value2,
+          status: 'changed',
+        };
+      }
+      return { key, value: value1, status: 'unchanged' };
+    });
   };
 
-  return inner(object1, object2);
+  return buildDifference(object1, object2);
 };
 
 export default getDifference;

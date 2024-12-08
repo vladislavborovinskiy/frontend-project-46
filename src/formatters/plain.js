@@ -1,5 +1,7 @@
+import _ from 'lodash';
+
 const getValueToPrint = (value) => {
-  if (value instanceof Object) {
+  if (_.isObject(value)) {
     return '[complex value]';
   }
   if (typeof value === 'string') {
@@ -8,63 +10,27 @@ const getValueToPrint = (value) => {
   return value;
 };
 
-const getPlain = (object) => {
-  const inner = (obj, ancestry) => {
-    const entries = Object.entries(obj);
-    return entries.reduce((acc, entrie) => {
-      const [key, value] = entrie;
-      const cleanKey = key.slice(2);
-      const keyToPrint = `${ancestry}${cleanKey}`;
-      const valueToPrint = getValueToPrint(value);
-
-      if (key.startsWith('+')) {
-        return `${acc}\n${keyToPrint}_added_${valueToPrint}`;
+const formatPlain = (tree) => {
+  const iter = (nodes, ancestry) => nodes
+    .flatMap((node) => {
+      const property = `${ancestry}${node.key}`;
+      switch (node.status) {
+        case 'added':
+          return `Property '${property}' was added with value: ${getValueToPrint(node.value)}`;
+        case 'deleted':
+          return `Property '${property}' was removed`;
+        case 'changed':
+          return `Property '${property}' was updated. From ${getValueToPrint(node.value1)} to ${getValueToPrint(node.value2)}`;
+        case 'nested':
+          return iter(node.children, `${property}.`);
+        case 'unchanged':
+          return [];
+        default:
+          throw new Error(`Unknown status: ${node.status}`);
       }
-      if (key.startsWith('-')) {
-        return `${acc}\n${keyToPrint}_removed_${valueToPrint}`;
-      }
-      if (key.startsWith(' ') && (value instanceof Object)) {
-        return acc + inner(value, `${keyToPrint}.`);
-      }
-      return acc;
-    }, '');
-  };
+    });
 
-  const intermediateList = inner(object, '')
-    .split('\n')
-    .map((el) => el.split('_'))
-    .slice(1);
-
-  const list = intermediateList.reduce((acc, el) => {
-    if (acc.length === 0) {
-      acc.push(el);
-      return acc;
-    }
-    const lastEl = acc.at(-1);
-    if (el[0] === lastEl[0]) {
-      acc.pop();
-      acc.push([el[0], 'updated', lastEl[2], el[2]]);
-    } else {
-      acc.push(el);
-    }
-    return acc;
-  }, []);
-
-  const result = list.reduce((acc, el) => {
-    const status = el[1];
-    switch (status) {
-      case 'added':
-        return `${acc}\nProperty '${el[0]}' was added with value: ${el[2]}`;
-      case 'removed':
-        return `${acc}\nProperty '${el[0]}' was removed`;
-      case 'updated':
-        return `${acc}\nProperty '${el[0]}' was updated. From ${el[2]} to ${el[3]}`;
-      default:
-        throw new Error(`Unknown status: ${status}!`);
-    }
-  }, '');
-
-  return result.trim();
+  return iter(tree, '').join('\n');
 };
 
-export default getPlain;
+export default formatPlain;

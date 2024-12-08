@@ -1,23 +1,44 @@
-const getStylish = (object) => {
-  const getIndent = (string, multiplier) => {
-    const offset = string.startsWith('+') || string.startsWith('-') || string.startsWith(' ') ? 2 : 0;
-    const standardIndent = 4;
-    const indentLength = multiplier * standardIndent - offset;
-    return ' '.repeat(indentLength);
-  };
-  const inner = (obj, depth) => {
-    const entries = Object.entries(obj);
-    return entries.reduce((acc, entrie) => {
-      const [key, value] = entrie;
-      const identKey = getIndent(key, depth);
-      const indentBrace = getIndent('}', depth);
-      if (!(value instanceof Object)) {
-        return `${acc}\n${identKey}${key}: ${value}`;
+import _ from 'lodash';
+
+const getIndent = (depth) => ' '.repeat(depth * 4);
+
+const formatStylish = (tree) => {
+  const iter = (nodes, depth) => nodes
+    .map((node) => {
+      const indent = getIndent(depth);
+      const braceIndent = getIndent(depth - 1);
+
+      const stringify = (value, currentDepth) => {
+        if (!_.isObject(value)) {
+          return value;
+        }
+        const entries = Object.entries(value)
+          .map(([key, val]) => `${getIndent(currentDepth + 1)}  ${key}: ${stringify(val, currentDepth + 1)}`)
+          .join('\n');
+        return `{\n${entries}\n${getIndent(currentDepth)}}`;
+      };
+
+      switch (node.status) {
+        case 'added':
+          return `${indent}+ ${node.key}: ${stringify(node.value, depth)}`;
+        case 'deleted':
+          return `${indent}- ${node.key}: ${stringify(node.value, depth)}`;
+        case 'unchanged':
+          return `${indent}  ${node.key}: ${stringify(node.value, depth)}`;
+        case 'changed':
+          return [
+            `${indent}- ${node.key}: ${stringify(node.value1, depth)}`,
+            `${indent}+ ${node.key}: ${stringify(node.value2, depth)}`,
+          ].join('\n');
+        case 'nested':
+          return `${indent}  ${node.key}: {\n${iter(node.children, depth + 1)}\n${braceIndent}}`;
+        default:
+          throw new Error(`Unknown status: ${node.status}`);
       }
-      return `${acc}\n${identKey}${key}: {${inner(value, depth + 1)}\n${indentBrace}}`;
-    }, '');
-  };
-  return `\n{${inner(object, 1)}\n}`;
+    })
+    .join('\n');
+
+  return `{\n${iter(tree, 1)}\n}`;
 };
 
-export default getStylish;
+export default formatStylish;
